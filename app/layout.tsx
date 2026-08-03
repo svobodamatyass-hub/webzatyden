@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: "Texty, design i techniku vyřešíme za vás. Jasně, rychle a bez chaosu.",
       locale: "cs_CZ",
       type: "website",
-      images: [{ url: socialImage, width: 1730, height: 909, alt: "webzatyden — Váš nový web. Za týden online." }],
+      images: [{ url: socialImage, width: 1729, height: 910, alt: "webzatyden — Váš nový web. Za týden online." }],
     },
     twitter: {
       card: "summary_large_image",
@@ -34,5 +34,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="cs"><body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body></html>;
+  const themeScript = `try{const saved=localStorage.getItem('wzt-theme');const system=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=saved==='dark'||saved==='light'?saved:system}catch{document.documentElement.dataset.theme='light'}`;
+
+  return (
+    <html lang="cs" suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
+    </html>
+  );
 }
