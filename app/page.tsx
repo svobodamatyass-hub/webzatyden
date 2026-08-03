@@ -174,11 +174,11 @@ export default function Home() {
         <div className="showcase" data-reveal>
           <div className="project-selector" role="tablist" aria-label="Portfolio">
             {t.projects.map((project, index) => <button key={project.title} role="tab" aria-selected={activeProject === index} onClick={() => { setActiveProject(index); setPortfolioPlaying(false); }}><span>0{index+1}</span><b>{project.title}</b><small>{project.type}</small></button>)}
-            <button className="play-control" onClick={() => setPortfolioPlaying(!portfolioPlaying)} aria-pressed={!portfolioPlaying}>{portfolioPlaying ? "Ⅱ" : "▶"} {portfolioPlaying ? t.pause : t.play}</button>
+            <button className="play-control" onClick={() => setPortfolioPlaying(!portfolioPlaying)} aria-pressed={!portfolioPlaying}><span aria-hidden="true">{portfolioPlaying ? "Ⅱ" : "▶"}</span><b>{portfolioPlaying ? t.pause : t.play}</b></button>
           </div>
           <article className={`showcase-stage stage-${activeProject}`} key={`${lang}-${activeProject}`}>
             <div className="stage-browser"><div className="stage-top"><span/><span/><span/><small>{active.title.toLowerCase().replaceAll(" ", "")}.cz</small></div><div className="stage-page"><div className="stage-nav"><b>{active.title}</b><span>Studio&nbsp;&nbsp; Services&nbsp;&nbsp; Contact</span></div><p>{active.type}</p><h3>{active.line}</h3><span className="stage-sub">{active.sub}</span><div className="stage-button">Explore <Arrow /></div><div className="stage-art"><i/><i/><i/></div></div></div>
-            <div className="stage-meta"><span>{t.demo}</span><b>0{activeProject+1} / 03</b></div>
+            <div className="stage-meta"><span>{t.demo}</span><div className="stage-progress" aria-hidden="true">{t.projects.map((project,index)=><i className={index===activeProject?"active":""} key={project.title}/>)}</div><b>0{activeProject+1} / 03</b></div>
           </article>
         </div>
       </section>
