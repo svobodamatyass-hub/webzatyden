@@ -3,5 +3,12 @@
   "name": "webzatyden",
   "pages_build_output_dir": "./dist/pages",
   "compatibility_date": "2026-05-15",
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "webzatyden-leads",
+      "database_id": "cc7b19eb-34e0-4150-bee5-014d43830603"
+    }
+  ]
 }
