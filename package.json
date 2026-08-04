@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vinext dev",
     "build": "vinext build",
+    "build:pages": "npm run build && node scripts/build-pages.mjs",
     "start": "vinext start",
     "test": "npm run typecheck && npm run build && npm run lint",
     "typecheck": "tsc --noEmit",
