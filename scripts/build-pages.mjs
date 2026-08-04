@@ -1,4 +1,4 @@
-import { cp, mkdir, rename, rm } from "node:fs/promises";
+import { copyFile, cp, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
@@ -13,7 +13,8 @@ await mkdir(pagesDirectory, { recursive: true });
 // directory. Vinext already emits both; this step only assembles them.
 await cp(clientDirectory, pagesDirectory, { recursive: true });
 await cp(serverDirectory, pagesDirectory, { recursive: true });
-await rename(
+await copyFile(
   resolve(pagesDirectory, "index.js"),
   resolve(pagesDirectory, "_worker.js"),
 );
+await rm(resolve(pagesDirectory, "wrangler.json"), { force: true });
