@@ -1,4 +1,4 @@
-import { copyFile, cp, mkdir, rm } from "node:fs/promises";
+import { copyFile, cp, mkdir, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
@@ -17,6 +17,18 @@ await cp(serverDirectory, pagesDirectory, { recursive: true });
 await copyFile(
   resolve(pagesDirectory, "index.js"),
   resolve(pagesDirectory, "_worker.js"),
+);
+await writeFile(
+  resolve(pagesDirectory, "_routes.json"),
+  `${JSON.stringify(
+    {
+      version: 1,
+      include: ["/*"],
+      exclude: ["/assets/*", "/og.png"],
+    },
+    null,
+    2,
+  )}\n`,
 );
 await rm(resolve(pagesDirectory, "wrangler.json"), { force: true });
 
