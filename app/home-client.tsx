@@ -134,6 +134,27 @@ export default function HomeClient({ lang }: { lang: Lang }) {
   }, [lang]);
 
   useEffect(() => {
+    let frame = 0;
+    const updateProgress = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+      document.documentElement.style.setProperty("--scroll-progress", String(progress));
+      frame = 0;
+    };
+    const requestUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateProgress);
+    };
+    updateProgress();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!portfolioPlaying || matchMedia("(prefers-reduced-motion: reduce)").matches || matchMedia("(max-width: 760px)").matches) return;
     const interval = window.setInterval(() => {
       if (!document.hidden) setActiveProject((current) => (current + 1) % t.projects.length);
@@ -282,6 +303,7 @@ export default function HomeClient({ lang }: { lang: Lang }) {
   return (
     <>
       <a className="skip-link" href="#content">{t.skip}</a>
+      <div className="scroll-progress" aria-hidden="true" />
       <header className="site-header" lang={lang}>
         <a className="brand" href="#top" aria-label="webzatyden"><Logo /></a>
         <nav id="main-navigation" className={menuOpen ? "nav open" : "nav"} aria-label={t.navLabel}>
