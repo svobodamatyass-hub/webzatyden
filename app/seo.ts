@@ -126,9 +126,8 @@ export function createStructuredData(lang: Lang) {
         "@type": "OfferCatalog",
         name: page.serviceName,
         itemListElement: [
-          { "@type": "Offer", name: "Start", price: "29900", priceCurrency: "CZK" },
-          { "@type": "Offer", name: lang === "cs" ? "Web za týden" : "Website in a week", price: "49900", priceCurrency: "CZK" },
-          { "@type": "Offer", name: "Plus", price: "69900", priceCurrency: "CZK" },
+          { "@type": "Offer", name: "Start", price: "3000", priceCurrency: "CZK" },
+          { "@type": "Offer", name: lang === "cs" ? "Web za týden" : "Website in a week", price: "5000", priceCurrency: "CZK" },
         ],
       },
     },
