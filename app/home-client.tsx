@@ -182,7 +182,7 @@ export default function HomeClient({ lang }: { lang: Lang }) {
   return (
     <>
       <a className="skip-link" href="#content">{t.skip}</a>
-      <header className="site-header">
+      <header className="site-header" lang={lang}>
         <a className="brand" href="#top" aria-label="webzatyden"><Logo /></a>
         <nav id="main-navigation" className={menuOpen ? "nav open" : "nav"} aria-label={t.navLabel}>
           {["#work", "#process", "#pricing", "#faq"].map((href, index) => <a ref={index === 0 ? firstNavRef : undefined} href={href} key={href} onClick={() => setMenuOpen(false)}>{t.nav[index]}</a>)}
@@ -195,7 +195,7 @@ export default function HomeClient({ lang }: { lang: Lang }) {
         <button ref={menuButtonRef} className="menu-button" aria-label={menuOpen ? t.closeMenu : t.openMenu} aria-controls="main-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><span /><span /></button>
       </header>
 
-      <main id="content" tabIndex={-1}>
+      <main id="content" lang={lang} tabIndex={-1}>
 
       <section className="hero section" id="top">
         <div className="hero-copy" data-reveal>
@@ -254,7 +254,7 @@ export default function HomeClient({ lang }: { lang: Lang }) {
 
       </main>
 
-      <footer><div className="footer-brand"><a className="brand" href="#top"><Logo/></a><p>{t.footer}</p></div><div className="footer-links"><div><b>{t.explore}</b><a href="#work">{t.nav[0]}</a><a href="#process">{t.nav[1]}</a><a href="#pricing">{t.nav[2]}</a><a href="#faq">FAQ</a></div><div><b>CONTACT</b><a href="mailto:poptavka@webzatyden.cz">poptavka@webzatyden.cz</a><span>Europe / Prague</span></div></div><div className="footer-bottom"><span>© 2026 webzatyden</span><span>{t.concept}</span><a href="#top">{t.top} ↑</a></div></footer>
+      <footer lang={lang}><div className="footer-brand"><a className="brand" href="#top"><Logo/></a><p>{t.footer}</p></div><div className="footer-links"><div><b>{t.explore}</b><a href="#work">{t.nav[0]}</a><a href="#process">{t.nav[1]}</a><a href="#pricing">{t.nav[2]}</a><a href="#faq">FAQ</a></div><div><b>CONTACT</b><a href="mailto:poptavka@webzatyden.cz">poptavka@webzatyden.cz</a><span>Europe / Prague</span></div></div><div className="footer-bottom"><span>© 2026 webzatyden</span><span>{t.concept}</span><a href="#top">{t.top} ↑</a></div></footer>
       <a className={`mobile-cta${contactVisible ? " hidden" : ""}`} href="#contact">{t.cta}<Arrow/></a>
     </>
   );
