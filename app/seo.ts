@@ -89,13 +89,13 @@ const faqs = {
     ["Může být kvalitní web hotový za týden?", "Ano, pokud jde o jasně vymezený prezentační web a připomínky schvaluje jeden člověk. Rychlost stojí na systému, ne na zkratkách."],
     ["Co když nemám texty ani fotografie?", "Z vašich odpovědí připravíme strukturu, texty upravíme a doporučíme vhodný obrazový směr."],
     ["Kolik úprav je v ceně?", "Dvě soustředěná kola v domluvených bodech procesu. Změna schváleného zadání se řeší zvlášť."],
-    ["Budu web opravdu vlastnit?", "Ano. Po doplacení získáte web, doménu i všechny domluvené přístupy."],
+    ["Budu web opravdu vlastnit?", "Po doplacení vám předáme web a všechny přístupy zahrnuté v dohodnutém rozsahu. Způsob správy domény a hostingu si potvrdíme před zahájením."],
   ],
   en: [
     ["Can a quality website be ready in a week?", "Yes, when the presentation site has a clear scope and one person approves feedback. Speed comes from the system, not shortcuts."],
     ["What if I have no copy or photos?", "We shape the structure from your answers, refine the copy and recommend a suitable visual direction."],
     ["How many revisions are included?", "Two focused rounds at agreed milestones. Changes to an approved brief are handled separately."],
-    ["Will I actually own the website?", "Yes. After final payment, you receive the website, domain and all agreed access."],
+    ["Will I actually own the website?", "After final payment, we hand over the website and every access credential included in the agreed scope. Domain and hosting management are confirmed before work begins."],
   ],
 } as const;
 

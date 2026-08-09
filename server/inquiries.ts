@@ -4,8 +4,8 @@ const RATE_LIMIT_MAX = 5;
 
 const ALLOWED_GOALS = new Set(["0", "1", "2", "3"]);
 const ALLOWED_SIZES = new Set(["1", "5", "8"]);
-const ALLOWED_PACKAGES = new Set(["0", "1", "2"]);
-const ALLOWED_LOCALES = new Set(["cs", "en", "de"]);
+const ALLOWED_PACKAGES = new Set(["0", "1"]);
+const ALLOWED_LOCALES = new Set(["cs", "en"]);
 
 type D1Result<T = unknown> = { results?: T[]; success: boolean };
 
