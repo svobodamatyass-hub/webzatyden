@@ -2,7 +2,7 @@
 
 import { FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
 
-type Lang = "cs" | "en" | "de";
+type Lang = "cs" | "en";
 
 const copy = {
   cs: {
@@ -44,16 +44,6 @@ const copy = {
     faqKicker:"06 / FREQUENT QUESTIONS", faqTitle:"You ask. We answer directly.", faqs:[["Can a quality website be ready in a week?","Yes, when the presentation site has a clear scope and one person approves feedback. Speed comes from the system, not shortcuts."],["What if I have no copy or photos?","We shape the structure from your answers, refine the copy and recommend a suitable visual direction."],["How many revisions are included?","Two focused rounds at agreed milestones. Changes to an approved brief are handled separately."],["Will I actually own the website?","Yes. After final payment, you receive the website, domain and all agreed access."]],
     contactKicker:"07 / LET'S BEGIN", contactTitle:"You could be live next week.", contactText:"Share three essentials. Within one working day we confirm whether your project fits the one-week process.", goalLegend:"What should the website achieve?", goals:[["leads","Generate leads"],["services","Explain services"],["booking","Enable bookings"],["project","Launch a project"]], sizeLegend:"How large is the website?", sizes:[["1","One page"],["5","3–5 pages"],["8","6–8 pages"]], contactLegend:"Where can we reach you?", selected:"Selected plan", name:"Name", email:"Email", project:"Company or project", message:"What should the new website solve?", optional:"optional", privacy:"We use your details only to handle this enquiry and never sell them.", send:"Send a no-obligation enquiry", sending:"Sending…", formNote:"No obligation. We reply within one working day.", sent:"Thank you. Your enquiry has been securely received.", sendError:"We could not send the enquiry. Please try again.", previousDay:"Previous day", nextDay:"Next day", dayOf:"Day", footer:"Professional website. Online in one week.", explore:"EXPLORE", concept:"We use your details only to handle your enquiry.", top:"Back to top",
   },
-  de: {
-    nav:["Projekte","Ablauf","Preise","FAQ"], cta:"Website anfragen", theme:"Farbmodus wechseln", language:"Sprache", skip:"Zum Inhalt springen", navLabel:"Hauptnavigation", openMenu:"Menü öffnen", closeMenu:"Menü schließen", eyebrow:"PROFESSIONELLE WEBSITE · IN 7 ARBEITSTAGEN", heroA:"Ihre neue Website.", heroB:"In einer Woche online.", lead:"Wir entwickeln Struktur, Texte und Design und bringen Ihre Website online. Sie beantworten ein paar Fragen — wir kümmern uns um den Rest.", showWork:"Projekte ansehen", trust:["Fester Preis","Keine versteckten Kosten","30 Tage Support"], ticker:["KLARER TERMIN","FESTER PREIS","EINFACHE SPRACHE","IHRE EIGENE WEBSITE"],
-    workKicker:"01 / AUSGEWÄHLTE RICHTUNGEN", workTitle:"Websites, die in Erinnerung bleiben.", workText:"Jede Branche braucht ihren eigenen Rhythmus. Entdecken Sie drei lebendige Richtungen — die Vorschau wechselt automatisch.", demo:"Konzeptprojekt", pause:"Pausieren", play:"Abspielen", projects:[{type:"INTERIEUR",title:"Studio Linie",line:"Raum zum Leben.",sub:"Eine ruhige Website für ein Studio, das auf Detail und Vertrauen baut."},{type:"HANDWERK",title:"Werkstatt Eiche",line:"Ehrlich nach Maß.",sub:"Material, Prozess und Ergebnis stehen im Mittelpunkt."},{type:"BERATUNG",title:"Klare Finanzen",line:"Klarheit bei jedem Schritt.",sub:"Verständliche Beratung ohne unnötige Fachsprache."}],
-    valueKicker:"02 / WAS SIE BEKOMMEN", valueTitle:"Ein Team. Eine Woche. Eine fertige Website.", values:[["Texte, die wirken","Wir erklären Ihr Angebot klar, menschlich und ohne leere Phrasen."],["Design mit Charakter","Ein visueller Auftritt für Ihre Marke — keine Standardschablone."],["Technik ohne Sorgen","Mobil, Geschwindigkeit, Formulare, SEO-Basis und Start übernehmen wir."]],
-    processKicker:"03 / DER ABLAUF", processTitle:"Sieben Tage. Kein Chaos.", processText:"Sie wissen immer, was passiert und wann wir Sie brauchen.", days:[["01","Wir lernen Sie kennen","Ziele, Kunden und Unterlagen."],["02","Wir ordnen Inhalte","Struktur und Kernbotschaft."],["03","Wir zeigen die Richtung","Erster Entwurf und Feedback."],["04–05","Wir bauen","Seiten, Mobil und Formulare."],["06","Wir verfeinern","Kontrolle und Änderungen."],["07","Wir gehen online","Start und Übergabe."]], fair:"Die sieben Tage beginnen nach Bestätigung, Unterlagen und Anzahlung.",
-    pricingKicker:"04 / PREISE", pricingTitle:"Klarer Umfang. Klarer Preis.", pricingText:"Keine Stundensätze und keine Überraschungen.", popular:"BELIEBTESTE WAHL", choose:"Wählen", vat:"zzgl. MwSt. · einmalig", packages:[{name:"Start",price:"29 900 Kč",note:"Für ein klares Angebot",items:["Eine lange Seite","6–8 Abschnitte","Textoptimierung","Kontaktformular"]},{name:"Website in einer Woche",price:"49 900 Kč",note:"Für die meisten kleinen Firmen",items:["Bis zu 5 Seiten","Struktur und Texte","Individuelles Design","2 Korrekturrunden","30 Tage Support"]},{name:"Plus",price:"69 900 Kč",note:"Für ein breiteres Angebot",items:["Bis zu 8 Seiten","Alles aus dem Hauptpaket","Eine erweiterte Funktion","Priorisierte Betreuung"]}],
-    promiseKicker:"05 / UNSERE VEREINBARUNG", promiseTitle:"Schnell heißt nie hastig.", promises:[["Termin unter Kontrolle","Sie erhalten einen genauen Plan."],["Preis ohne Überraschungen","Der Umfang bleibt fest."],["Start nach Freigabe","Nichts geht ohne Sie online."],["30 Tage Support","Technische Fehler beheben wir gratis."]],
-    faqKicker:"06 / HÄUFIGE FRAGEN", faqTitle:"Sie fragen. Wir antworten direkt.", faqs:[["Kann eine gute Website in einer Woche fertig sein?","Ja, wenn die Präsentationswebsite klar abgegrenzt ist und eine Person Feedback freigibt. Das Tempo kommt vom System, nicht von Abkürzungen."],["Was, wenn ich keine Texte oder Fotos habe?","Aus Ihren Antworten entwickeln wir Struktur, überarbeiten Texte und empfehlen eine passende Bildsprache."],["Wie viele Änderungen sind enthalten?","Zwei konzentrierte Runden an vereinbarten Punkten. Änderungen am freigegebenen Briefing werden separat behandelt."],["Gehört die Website wirklich mir?","Ja. Nach Abschluss erhalten Sie Website, Domain und alle vereinbarten Zugänge."]],
-    contactKicker:"07 / STARTEN WIR", contactTitle:"Nächste Woche könnten Sie online sein.", contactText:"Nennen Sie uns drei Grundlagen. Innerhalb eines Arbeitstages bestätigen wir, ob Ihr Projekt passt.", goalLegend:"Was soll die Website erreichen?", goals:[["anfragen","Anfragen gewinnen"],["leistungen","Leistungen erklären"],["buchung","Buchungen ermöglichen"],["projekt","Projekt vorstellen"]], sizeLegend:"Wie groß soll die Website sein?", sizes:[["1","Eine Seite"],["5","3–5 Seiten"],["8","6–8 Seiten"]], contactLegend:"Wie erreichen wir Sie?", selected:"Gewähltes Paket", name:"Name", email:"E-Mail", project:"Firma oder Projekt", message:"Was soll die neue Website lösen?", optional:"optional", privacy:"Wir verwenden Ihre Angaben nur zur Bearbeitung dieser Anfrage und geben sie nicht weiter.", send:"Unverbindliche Anfrage senden", sending:"Wird gesendet…", formNote:"Unverbindlich. Wir antworten innerhalb eines Arbeitstages.", sent:"Vielen Dank. Ihre Anfrage wurde sicher empfangen.", sendError:"Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut.", previousDay:"Vorheriger Tag", nextDay:"Nächster Tag", dayOf:"Tag", footer:"Professionelle Website. In einer Woche online.", explore:"ENTDECKEN", concept:"Wir verwenden Ihre Angaben nur zur Bearbeitung Ihrer Anfrage.", top:"Nach oben",
-  },
 } as const;
 
 function Logo() {
@@ -85,14 +75,13 @@ export default function Home() {
   const portfolioNavigation = {
     cs: ["Předchozí ukázka", "Další ukázka"],
     en: ["Previous project", "Next project"],
-    de: ["Vorheriges Projekt", "Nächstes Projekt"],
   }[lang];
 
   useEffect(() => {
     formStartedAt.current = Date.now();
-    const savedLang = localStorage.getItem("wzt-lang") as Lang | null;
+    const savedLang = localStorage.getItem("wzt-lang");
     const hydratePreferences = window.setTimeout(() => {
-      if (savedLang && savedLang in copy) setLang(savedLang);
+      if (savedLang === "cs" || savedLang === "en") setLang(savedLang);
       setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
     }, 0);
 
@@ -203,7 +192,7 @@ export default function Home() {
           {["#work", "#process", "#pricing", "#faq"].map((href, index) => <a ref={index === 0 ? firstNavRef : undefined} href={href} key={href} onClick={() => setMenuOpen(false)}>{t.nav[index]}</a>)}
         </nav>
         <div className="header-tools">
-          <div className="language-switch" role="group" aria-label={t.language}>{(["cs","en","de"] as Lang[]).map((item) => <button key={item} aria-pressed={lang === item} onClick={() => setLang(item)}>{item.toUpperCase()}</button>)}</div>
+          <div className="language-switch" role="group" aria-label={t.language}>{(["cs","en"] as Lang[]).map((item) => <button key={item} aria-pressed={lang === item} onClick={() => setLang(item)}>{item.toUpperCase()}</button>)}</div>
           <button className="theme-toggle" onClick={toggleTheme} aria-label={t.theme} aria-pressed={theme === "dark"}><span className="sun">☼</span><span className="moon">◐</span></button>
           <a className="button button-small header-cta" href="#contact">{t.cta} <Arrow /></a>
         </div>
