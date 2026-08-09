@@ -1,36 +1,42 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SITE_NAME, SITE_URL } from "./seo";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "latin-ext"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin", "latin-ext"] });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://webzatyden.svobodamatyass.chatgpt.site"),
-    alternates: { canonical: "/" },
-    title: "webzatyden — Váš nový web. Za týden online.",
-    description: "Profesionální firemní web s jasnou cenou a hotovým výsledkem do 7 pracovních dní.",
-    openGraph: {
-      title: "Váš nový web. Za týden online.",
-      description: "Texty, design i techniku vyřešíme za vás. Jasně, rychle a bez chaosu.",
-      locale: "cs_CZ",
-      type: "website",
-      images: [{ url: "/og.png", width: 1729, height: 910, alt: "webzatyden — Váš nový web. Za týden online." }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "Váš nový web. Za týden online.",
-      description: "Profesionální web do 7 pracovních dní, s jasnou cenou a bez chaosu.",
-      images: ["/og.png"],
-    },
-  };
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Tvorba webu za týden | webzatyden",
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: "Profesionální firemní web na míru do sedmi pracovních dní.",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/icon", type: "image/png", sizes: "64x64" }],
+    shortcut: "/icon",
+    apple: "/icon",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f1ea" },
+    { media: "(prefers-color-scheme: dark)", color: "#111210" },
+  ],
+  colorScheme: "light dark",
+};
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const themeScript = `try{const saved=localStorage.getItem('wzt-theme');const system=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=saved==='dark'||saved==='light'?saved:system}catch{document.documentElement.dataset.theme='light'}`;
+  const bootstrapScript = `try{document.documentElement.lang=location.pathname.startsWith('/en')?'en':'cs';const saved=localStorage.getItem('wzt-theme');const system=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=saved==='dark'||saved==='light'?saved:system}catch{document.documentElement.dataset.theme='light'}`;
 
   return (
     <html lang="cs" suppressHydrationWarning>
-      <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
+      <head><script dangerouslySetInnerHTML={{ __html: bootstrapScript }} /></head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
     </html>
   );
