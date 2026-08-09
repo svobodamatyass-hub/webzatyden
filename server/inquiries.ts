@@ -76,7 +76,7 @@ export async function handleInquiry(request: Request, env: InquiryEnvironment): 
   if (payload.website) return json({ ok: true }, 202);
 
   const age = Date.now() - payload.startedAt;
-  if (age < 1_500 || age > 24 * 60 * 60 * 1000) return json({ error: "Form session expired." }, 422);
+  if (age < 1_500 || age > 24 * 60 * 60 * 1000) return json({ error: "Form session expired.", code: "FORM_EXPIRED" }, 422);
   if (!env.LEAD_HASH_SECRET || env.LEAD_HASH_SECRET.length < 24) {
     return json({ error: "The form is temporarily unavailable." }, 503);
   }
@@ -99,7 +99,12 @@ export async function handleInquiry(request: Request, env: InquiryEnvironment): 
   ).bind(fingerprint).first<{ requestCount: number }>();
 
   if ((rate?.requestCount ?? RATE_LIMIT_MAX + 1) > RATE_LIMIT_MAX) {
-    return json({ error: "Too many requests. Please try again later." }, 429, { "Retry-After": "600" });
+    return json({ error: "Too many requests. Please try again later.", code: "RATE_LIMITED" }, 429, { "Retry-After": "600" });
+  }
+
+  const emailDomainStatus = await emailDomainAcceptsMail(payload.email);
+  if (emailDomainStatus === "invalid") {
+    return json({ error: "Email domain does not accept mail.", field: "email", code: "EMAIL_DOMAIN_INVALID" }, 422);
   }
 
   try {
@@ -172,6 +177,40 @@ function clean(value: unknown, maxLength: number): string {
 
 function invalid(field: string): ValidationResult {
   return { ok: false, field, message: "Please check the highlighted field." };
+}
+
+async function emailDomainAcceptsMail(email: string): Promise<"valid" | "invalid" | "unknown"> {
+  const domain = email.slice(email.lastIndexOf("@") + 1).toLowerCase();
+  const mx = await dnsRecordStatus(domain, "MX", 15);
+  if (mx === "present") return "valid";
+  if (mx === "unknown") return "unknown";
+
+  // SMTP permits delivery to an address record when no MX record exists.
+  const [ipv4, ipv6] = await Promise.all([
+    dnsRecordStatus(domain, "A", 1),
+    dnsRecordStatus(domain, "AAAA", 28),
+  ]);
+  if (ipv4 === "present" || ipv6 === "present") return "valid";
+  if (ipv4 === "unknown" || ipv6 === "unknown") return "unknown";
+  return "invalid";
+}
+
+async function dnsRecordStatus(domain: string, recordType: string, numericType: number): Promise<"present" | "missing" | "unknown"> {
+  try {
+    const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=${recordType}`, {
+      headers: { Accept: "application/dns-json" },
+      signal: AbortSignal.timeout(2_500),
+    });
+    if (!response.ok) return "unknown";
+    const result = await response.json() as { Status?: number; Answer?: Array<{ type?: number; data?: string }> };
+    if (result.Status === 3) return "missing";
+    if (result.Status !== 0) return "unknown";
+    const matchingAnswers = result.Answer?.filter((answer) => answer.type === numericType) ?? [];
+    if (recordType === "MX" && matchingAnswers.some((answer) => /^\s*0\s+\.\s*$/u.test(answer.data ?? ""))) return "missing";
+    return matchingAnswers.length > 0 ? "present" : "missing";
+  } catch {
+    return "unknown";
+  }
 }
 
 async function hmacHex(secret: string, value: string): Promise<string> {

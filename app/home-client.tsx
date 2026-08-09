@@ -3,6 +3,9 @@
 import { FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
 
 export type Lang = "cs" | "en";
+type FormField = "name" | "email" | "project";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u;
 
 const copy = {
   cs: {
@@ -34,7 +37,8 @@ const copy = {
     ],
     faqKicker:"05 / ČASTÉ OTÁZKY", faqTitle:"Ptáte se. Odpovídáme rovnou.", faqHelp:"Týdenní režim nejlépe funguje pro jasně vymezený prezentační web. Složitější funkce nejdříve posoudíme a navrhneme realistický postup.", faqs:[["Může být kvalitní web hotový za týden?","Ano, pokud jde o jasně vymezený prezentační web a připomínky schvaluje jeden člověk. Rychlost stojí na systému, ne na zkratkách."],["Co když nemám texty ani fotografie?","Z vašich odpovědí připravíme strukturu, texty upravíme a doporučíme vhodný obrazový směr."],["Kolik úprav je v ceně?","Dvě soustředěná kola v domluvených bodech procesu. Změna schváleného zadání se řeší zvlášť."],["Budu web opravdu vlastnit?","Po doplacení vám předáme web a všechny přístupy zahrnuté v dohodnutém rozsahu. Způsob správy domény a hostingu si potvrdíme před zahájením."]],
     contactKicker:"06 / POJĎME ZAČÍT", contactTitle:"Za týden můžete mít hotovo.", contactText:"Nevíte, který balíček vybrat? Nevadí. Popište stručně svůj projekt a vhodný rozsah doporučíme v odpovědi.", contactStats:[["2 min","stručný brief"],["1 den","odpověď"],["7 dní","cesta online"]],
-    goalLegend:"Co má web hlavně udělat?", goals:[["poptávky","Získávat poptávky"],["služby","Vysvětlit služby"],["rezervace","Umožnit rezervace"],["projekt","Představit projekt"]], sizeLegend:"Jak velký web potřebujete?", sizes:[["1","Jedna stránka"],["5","3–5 stránek"],["8","6–8 stránek"]], contactLegend:"Kam se můžeme ozvat?", selected:"Vybraný balíček", name:"Jméno", email:"E-mail", project:"Firma nebo projekt", message:"Co by měl nový web vyřešit?", optional:"nepovinné", privacy:"Údaje použijeme pouze k vyřízení poptávky a nebudeme je předávat dál.", send:"Odeslat nezávaznou poptávku", sending:"Odesílám…", formNote:"Bez závazků. Odpovíme do jednoho pracovního dne.", sent:"Děkujeme. Poptávku jsme bezpečně přijali.", sendError:"Poptávku se nepodařilo odeslat. Zkuste to prosím znovu.", previousDay:"Předchozí den", nextDay:"Další den", dayOf:"Den",
+    goalLegend:"Co má web hlavně udělat?", goals:[["poptávky","Získávat poptávky"],["služby","Vysvětlit služby"],["rezervace","Umožnit rezervace"],["projekt","Představit projekt"]], sizeLegend:"Jak velký web potřebujete?", sizes:[["1","Jedna stránka"],["5","3–5 stránek"],["8","6–8 stránek"]], packageLegend:"Který balíček vám vyhovuje?", packageHint:"Volbu můžete změnit i přímo tady.", contactLegend:"Kam se můžeme ozvat?", name:"Jméno", email:"E-mail", emailHint:"Ověříme formát i to, zda doména přijímá e-maily.", project:"Firma nebo projekt", message:"Co by měl nový web vyřešit?", optional:"nepovinné", privacy:"Údaje použijeme pouze k vyřízení poptávky a nebudeme je předávat dál.", send:"Odeslat nezávaznou poptávku", sending:"Kontroluji a odesílám…", formNote:"Bez závazků. Odpovíme do jednoho pracovního dne.", sent:"Děkujeme. Poptávku jsme bezpečně přijali.", previousDay:"Předchozí den", nextDay:"Další den", dayOf:"Den",
+    errors:{name:"Napište prosím alespoň 2 znaky.",email:"Zadejte platný e-mail, například jmeno@firma.cz.",emailDomain:"Tato e-mailová doména nepřijímá poštu. Zkontrolujte překlep za zavináčem.",project:"Napište prosím název firmy nebo projektu.",review:"Zkontrolujte prosím označená pole.",rateLimit:"Odeslali jste více pokusů. Zkuste to prosím znovu za 10 minut.",expired:"Platnost formuláře vypršela. Obnovte stránku a zkuste to znovu.",general:"Poptávku se nepodařilo odeslat. Zkuste to prosím znovu."},
     footer:"Profesionální web. Za týden online.", explore:"PROZKOUMAT", concept:"Vaše údaje používáme pouze k vyřízení poptávky.", top:"Nahoru",
     quotes:[
       { label:"DESIGN, KTERÝ PRACUJE", lead:"Nejen hezký web.", accent:"Web, který si lidé zapamatují." },
@@ -53,7 +57,8 @@ const copy = {
     processKicker:"03 / THE PROCESS", processTitle:"Seven days. No chaos.", processText:"You always know what is happening and when we need you.", processFacts:["2 revision rounds", "30 days technical support"], days:[["01","We meet you","Goals, customers and materials."],["02","We shape content","Structure and core message."],["03","We show direction","First concept and your reaction."],["04–05","We build","Pages, mobile and forms."],["06","We refine","Review and agreed changes."],["07","We go live","Launch and access handover."]], fair:"Seven days start after scope confirmation, materials delivery and the deposit.",
     pricingKicker:"04 / PRICING", pricingTitle:"Clear scope. Clear price.", pricingText:"No hourly rates and no invoice surprises.", popular:"MOST POPULAR", choose:"Choose", vat:"one-off", scopeNote:"We confirm the exact scope and final price before work begins. Anything outside the agreed scope is discussed and approved first.", packages:[{name:"Start",price:"3 000 Kč",note:"For one clear offer",items:["One long page","6–8 sections","Copy refinement","Contact form"]},{name:"Website in a week",price:"5 000 Kč",note:"For most small businesses",items:["Up to 5 pages","Structure and copy","Custom design","2 revision rounds","30 days support"]}],
     faqKicker:"05 / FREQUENT QUESTIONS", faqTitle:"You ask. We answer directly.", faqHelp:"The one-week process works best for a clearly scoped presentation website. We assess more complex functionality first and propose a realistic process.", faqs:[["Can a quality website be ready in a week?","Yes, when the presentation site has a clear scope and one person approves feedback. Speed comes from the system, not shortcuts."],["What if I have no copy or photos?","We shape the structure from your answers, refine the copy and recommend a suitable visual direction."],["How many revisions are included?","Two focused rounds at agreed milestones. Changes to an approved brief are handled separately."],["Will I actually own the website?","After final payment, we hand over the website and every access credential included in the agreed scope. Domain and hosting management are confirmed before work begins."]],
-    contactKicker:"06 / LET'S BEGIN", contactTitle:"You could be live next week.", contactText:"Not sure which plan fits? Briefly describe your project and we will recommend the suitable scope in our reply.", contactStats:[["2 min","short brief"],["1 day","reply"],["7 days","path to launch"]], goalLegend:"What should the website achieve?", goals:[["leads","Generate leads"],["services","Explain services"],["booking","Enable bookings"],["project","Launch a project"]], sizeLegend:"How large is the website?", sizes:[["1","One page"],["5","3–5 pages"],["8","6–8 pages"]], contactLegend:"Where can we reach you?", selected:"Selected plan", name:"Name", email:"Email", project:"Company or project", message:"What should the new website solve?", optional:"optional", privacy:"We use your details only to handle this enquiry and never sell them.", send:"Send a no-obligation enquiry", sending:"Sending…", formNote:"No obligation. We reply within one working day.", sent:"Thank you. Your enquiry has been securely received.", sendError:"We could not send the enquiry. Please try again.", previousDay:"Previous day", nextDay:"Next day", dayOf:"Day", footer:"Professional website. Online in one week.", explore:"EXPLORE", concept:"We use your details only to handle your enquiry.", top:"Back to top",
+    contactKicker:"06 / LET'S BEGIN", contactTitle:"You could be live next week.", contactText:"Not sure which plan fits? Briefly describe your project and we will recommend the suitable scope in our reply.", contactStats:[["2 min","short brief"],["1 day","reply"],["7 days","path to launch"]], goalLegend:"What should the website achieve?", goals:[["leads","Generate leads"],["services","Explain services"],["booking","Enable bookings"],["project","Launch a project"]], sizeLegend:"How large is the website?", sizes:[["1","One page"],["5","3–5 pages"],["8","6–8 pages"]], packageLegend:"Which package suits you?", packageHint:"You can change your choice here.", contactLegend:"Where can we reach you?", name:"Name", email:"Email", emailHint:"We check the format and whether the domain accepts email.", project:"Company or project", message:"What should the new website solve?", optional:"optional", privacy:"We use your details only to handle this enquiry and never sell them.", send:"Send a no-obligation enquiry", sending:"Checking and sending…", formNote:"No obligation. We reply within one working day.", sent:"Thank you. Your enquiry has been securely received.", previousDay:"Previous day", nextDay:"Next day", dayOf:"Day", footer:"Professional website. Online in one week.", explore:"EXPLORE", concept:"We use your details only to handle your enquiry.", top:"Back to top",
+    errors:{name:"Please enter at least 2 characters.",email:"Enter a valid email, for example name@company.com.",emailDomain:"This email domain does not accept mail. Check for a typo after the @ sign.",project:"Please enter your company or project name.",review:"Please check the highlighted fields.",rateLimit:"There have been several attempts. Please try again in 10 minutes.",expired:"This form has expired. Refresh the page and try again.",general:"We could not send the enquiry. Please try again."},
     quotes:[
       { label:"DESIGN THAT DOES ITS JOB", lead:"More than a beautiful website.", accent:"A website people remember." },
       { label:"SPEED WITHOUT SHORTCUTS", lead:"Every day has a clear step.", accent:"You stay in control." },
@@ -93,6 +98,8 @@ export default function HomeClient({ lang }: { lang: Lang }) {
   const [size, setSize] = useState("5");
   const [selectedPackage, setSelectedPackage] = useState(1);
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [formErrors, setFormErrors] = useState<Partial<Record<FormField, string>>>({});
+  const [formMessage, setFormMessage] = useState("");
   const [contactVisible, setContactVisible] = useState(false);
   const heroVisual = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -172,10 +179,45 @@ export default function HomeClient({ lang }: { lang: Lang }) {
     heroVisual.current?.style.setProperty("--hero-y", `${y}px`);
   }
 
+  function clientFieldError(field: FormField, value: string) {
+    const cleanValue = value.trim();
+    if (field === "email") return EMAIL_PATTERN.test(cleanValue) ? "" : t.errors.email;
+    if (field === "project") return cleanValue.length >= 2 ? "" : t.errors.project;
+    return cleanValue.length >= 2 ? "" : t.errors.name;
+  }
+
+  function validateField(field: FormField, value: string) {
+    const message = clientFieldError(field, value);
+    setFormErrors((current) => ({ ...current, [field]: message || undefined }));
+    if (!message) setFormMessage("");
+  }
+
+  function clearFieldError(field: FormField) {
+    setFormErrors((current) => current[field] ? ({ ...current, [field]: undefined }) : current);
+    setFormMessage("");
+    if (formStatus === "error") setFormStatus("idle");
+  }
+
   async function submitLead(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
+    const nextErrors: Partial<Record<FormField, string>> = {
+      name: clientFieldError("name", String(data.get("name") ?? "")) || undefined,
+      email: clientFieldError("email", String(data.get("email") ?? "")) || undefined,
+      project: clientFieldError("project", String(data.get("project") ?? "")) || undefined,
+    };
+    const firstInvalid = (["name", "email", "project"] as FormField[]).find((field) => nextErrors[field]);
+    if (firstInvalid) {
+      setFormErrors(nextErrors);
+      setFormMessage(t.errors.review);
+      setFormStatus("idle");
+      form.querySelector<HTMLInputElement>(`[name="${firstInvalid}"]`)?.focus();
+      return;
+    }
+
+    setFormErrors({});
+    setFormMessage("");
     setFormStatus("submitting");
     idempotencyKey.current ??= crypto.randomUUID();
 
@@ -198,16 +240,25 @@ export default function HomeClient({ lang }: { lang: Lang }) {
         }),
       });
       if (!response.ok) {
-        const error = await response.json().catch(() => ({})) as { field?: string };
+        const error = await response.json().catch(() => ({})) as { field?: string; code?: string };
         const fieldName = error.field ? ({ name:"name", email:"email", company:"project", message:"message", goal:"goal", size:"size" } as Record<string,string>)[error.field] : undefined;
-        if (fieldName) form.querySelector<HTMLElement>(`[name="${fieldName}"]`)?.focus();
-        throw new Error("Request failed");
+        if (fieldName === "name" || fieldName === "email" || fieldName === "project") {
+          const fieldMessage = fieldName === "email"
+            ? error.code === "EMAIL_DOMAIN_INVALID" ? t.errors.emailDomain : t.errors.email
+            : fieldName === "project" ? t.errors.project : t.errors.name;
+          setFormErrors({ [fieldName]: fieldMessage });
+          form.querySelector<HTMLInputElement>(`[name="${fieldName}"]`)?.focus();
+        }
+        setFormMessage(error.code === "RATE_LIMITED" ? t.errors.rateLimit : error.code === "FORM_EXPIRED" ? t.errors.expired : fieldName ? t.errors.review : t.errors.general);
+        setFormStatus("error");
+        return;
       }
       form.reset();
       idempotencyKey.current = null;
       formStartedAt.current = Date.now();
       setFormStatus("success");
     } catch {
+      setFormMessage(t.errors.general);
       setFormStatus("error");
     }
   }
@@ -288,7 +339,21 @@ export default function HomeClient({ lang }: { lang: Lang }) {
 
       <section className="section faq-section" id="faq"><div className="faq-intro" data-reveal><span className="kicker">{t.faqKicker}</span><h2><RichHeading text={t.faqTitle} /></h2><p className="faq-help">{t.faqHelp}</p><a className="text-link" href="#contact">{t.cta}<Arrow/></a></div><div className="faq-list" data-reveal>{t.faqs.map(([question,answer],index)=><details key={question} open={index===0}><summary><span>0{index+1}</span>{question}<i aria-hidden="true">+</i></summary><p>{answer}</p></details>)}</div></section>
 
-      <section ref={contactRef} className="section contact-section" id="contact"><div className="contact-copy" data-reveal><span className="kicker">{t.contactKicker}</span><h2><RichHeading text={t.contactTitle} /></h2><p>{t.contactText}</p><div className="contact-numbers">{t.contactStats.map(([value,label])=><span key={value}><b>{value}</b>{label}</span>)}</div></div><form className="lead-form" onSubmit={submitLead} aria-busy={formStatus==="submitting"} data-reveal><fieldset className="form-section"><legend className="form-label">{t.goalLegend}</legend><div className="choice-grid">{t.goals.map(([,label],index)=><label key={label}><input type="radio" name="goal" checked={goal===String(index)} onChange={()=>setGoal(String(index))}/><span>{label}</span></label>)}</div></fieldset><fieldset className="form-section"><legend className="form-label">{t.sizeLegend}</legend><div className="choice-grid choice-three">{t.sizes.map(([value,label])=><label key={value}><input type="radio" name="size" checked={size===value} onChange={()=>setSize(value)}/><span>{label}</span></label>)}</div></fieldset><fieldset className="form-section form-contact"><legend className="form-label">{t.contactLegend}</legend><p className="selected-package">{t.selected}: <strong>{t.packages[selectedPackage].name}</strong></p><div className="field-grid"><label>{t.name}<input name="name" autoComplete="name" minLength={2} maxLength={100} required/></label><label>{t.email}<input name="email" autoComplete="email" inputMode="email" type="email" maxLength={254} required/></label><label className="full-field">{t.project}<input name="project" autoComplete="organization" minLength={2} maxLength={120} required/></label><label className="full-field">{t.message} <small>{t.optional}</small><textarea name="message" maxLength={1500} rows={4}/></label></div></fieldset><label className="honeypot" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off"/></label><p className="privacy-note"><span aria-hidden="true">✓</span>{t.privacy}</p><button className="button form-button" type="submit" disabled={formStatus==="submitting"}>{formStatus==="submitting"?t.sending:t.send}<Arrow/></button><p className={`form-note ${formStatus}`} aria-live="polite">{formStatus==="success"?t.sent:formStatus==="error"?t.sendError:t.formNote}</p></form></section>
+      <section ref={contactRef} className="section contact-section" id="contact">
+        <div className="contact-copy" data-reveal><span className="kicker">{t.contactKicker}</span><h2><RichHeading text={t.contactTitle} /></h2><p>{t.contactText}</p><div className="contact-numbers">{t.contactStats.map(([value,label])=><span key={value}><b>{value}</b>{label}</span>)}</div></div>
+        <form className="lead-form" onSubmit={submitLead} aria-busy={formStatus==="submitting"} noValidate data-reveal>
+          <fieldset className="form-section"><legend className="form-label">{t.goalLegend}</legend><div className="choice-grid">{t.goals.map(([,label],index)=><label key={label}><input type="radio" name="goal" checked={goal===String(index)} onChange={()=>setGoal(String(index))}/><span>{label}</span></label>)}</div></fieldset>
+          <fieldset className="form-section"><legend className="form-label">{t.sizeLegend}</legend><div className="choice-grid choice-three">{t.sizes.map(([value,label])=><label key={value}><input type="radio" name="size" checked={size===value} onChange={()=>setSize(value)}/><span>{label}</span></label>)}</div></fieldset>
+          <fieldset className="form-section package-section"><legend className="form-label">{t.packageLegend}</legend><p>{t.packageHint}</p><div className="package-choice">{t.packages.map((item,index)=><label key={item.name}><input type="radio" name="package" checked={selectedPackage===index} onChange={()=>setSelectedPackage(index)}/><span><b>{item.name}</b><small>{item.price}</small></span></label>)}</div></fieldset>
+          <fieldset className="form-section form-contact"><legend className="form-label">{t.contactLegend}</legend><div className="field-grid">
+            <label className={formErrors.name?"has-error":undefined}>{t.name}<input name="name" autoComplete="name" minLength={2} maxLength={100} required aria-invalid={Boolean(formErrors.name)} aria-describedby={formErrors.name?"name-error":undefined} onBlur={(event)=>validateField("name",event.currentTarget.value)} onChange={()=>clearFieldError("name")}/>{formErrors.name&&<span className="field-error" id="name-error">{formErrors.name}</span>}</label>
+            <label className={formErrors.email?"has-error":undefined}>{t.email}<input name="email" autoComplete="email" inputMode="email" type="email" maxLength={254} required aria-invalid={Boolean(formErrors.email)} aria-describedby={formErrors.email?"email-error":"email-hint"} onBlur={(event)=>validateField("email",event.currentTarget.value)} onChange={()=>clearFieldError("email")}/>{formErrors.email?<span className="field-error" id="email-error">{formErrors.email}</span>:<span className="field-hint" id="email-hint">{t.emailHint}</span>}</label>
+            <label className={`full-field${formErrors.project?" has-error":""}`}>{t.project}<input name="project" autoComplete="organization" minLength={2} maxLength={120} required aria-invalid={Boolean(formErrors.project)} aria-describedby={formErrors.project?"project-error":undefined} onBlur={(event)=>validateField("project",event.currentTarget.value)} onChange={()=>clearFieldError("project")}/>{formErrors.project&&<span className="field-error" id="project-error">{formErrors.project}</span>}</label>
+            <label className="full-field">{t.message} <small>{t.optional}</small><textarea name="message" maxLength={1500} rows={4}/></label>
+          </div></fieldset>
+          <label className="honeypot" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off"/></label><p className="privacy-note"><span aria-hidden="true">✓</span>{t.privacy}</p><button className="button form-button" type="submit" disabled={formStatus==="submitting"}>{formStatus==="submitting"?t.sending:t.send}<Arrow/></button><p className={`form-note ${formMessage?"error":formStatus}`} aria-live="polite">{formStatus==="success"?t.sent:formMessage||t.formNote}</p>
+        </form>
+      </section>
 
       </main>
 
