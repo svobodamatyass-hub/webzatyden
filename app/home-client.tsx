@@ -3,7 +3,7 @@
 import { FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
 
 export type Lang = "cs" | "en";
-type FormField = "name" | "email" | "project";
+type FormField = "firstName" | "lastName" | "email" | "project" | "customGoal" | "message";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u;
 
@@ -30,15 +30,15 @@ const copy = {
     processKicker: "03 / JAK TO PROBÍHÁ", processTitle: "Sedm dní. Žádný chaos.", processText: "Přesně víte, co se děje a kdy vás potřebujeme.", processFacts:["2 kola úprav", "30 dní technické podpory"],
     days: [["01","Poznáme vás","Cíle, zákazníci a podklady."],["02","Poskládáme obsah","Struktura a hlavní sdělení."],["03","Ukážeme směr","První návrh a vaše reakce."],["04–05","Postavíme web","Stránky, mobil a formuláře."],["06","Doladíme","Kontrola a domluvené úpravy."],["07","Jdeme online","Spuštění a předání přístupů."]],
     fair: "Sedm dní počítáme od potvrzení rozsahu, dodání podkladů a úhrady zálohy.",
-    pricingKicker: "04 / CENÍK", pricingTitle: "Jasný rozsah. Jasná cena.", pricingText: "Bez hodinových sazeb a překvapení na faktuře.", popular: "NEJČASTĚJŠÍ VOLBA", choose: "Vybrat", vat: "jednorázově", scopeNote:"Přesný rozsah a konečnou cenu potvrdíme před zahájením. Jakoukoli práci navíc nejdříve společně odsouhlasíme.",
+    pricingKicker: "04 / CENÍK", pricingTitle: "Jasný rozsah. Jasná cena.", pricingText: "Bez hodinových sazeb a překvapení na faktuře.", popular: "DOSTUPNÉ NYNÍ", choose: "Vybrat", development:"VE VÝVOJI", developmentCta:"Funkce ve vývoji", vat: "jednorázově", scopeNote:"Přesný rozsah a konečnou cenu potvrdíme před zahájením. Jakoukoli práci navíc nejdříve společně odsouhlasíme.",
     packages: [
       { name:"Start", price:"3 000 Kč", note:"Pro jednostránkový web", items:["Jedna dlouhá stránka","6–8 sekcí","Úprava textů","Kontaktní formulář"] },
       { name:"Web za týden", price:"5 000 Kč", note:"Pro web o 3–5 stránkách", items:["Vše z balíčku Start","Až 5 samostatných stránek","Rozšířená struktura a texty","Individuální design","2 kola úprav + 30 dní podpory"] },
     ],
     faqKicker:"05 / ČASTÉ OTÁZKY", faqTitle:"Ptáte se. Odpovídáme rovnou.", faqHelp:"Týdenní režim nejlépe funguje pro jasně vymezený prezentační web. Složitější funkce nejdříve posoudíme a navrhneme realistický postup.", faqs:[["Může být kvalitní web hotový za týden?","Ano, pokud jde o jasně vymezený prezentační web a připomínky schvaluje jeden člověk. Rychlost stojí na systému, ne na zkratkách."],["Co když nemám texty ani fotografie?","Z vašich odpovědí připravíme strukturu, texty upravíme a doporučíme vhodný obrazový směr."],["Kolik úprav je v ceně?","Dvě soustředěná kola v domluvených bodech procesu. Změna schváleného zadání se řeší zvlášť."],["Budu web opravdu vlastnit?","Po doplacení vám předáme web a všechny přístupy zahrnuté v dohodnutém rozsahu. Způsob správy domény a hostingu si potvrdíme před zahájením."]],
     contactKicker:"06 / POJĎME ZAČÍT", contactTitle:"Za týden můžete mít hotovo.", contactText:"Nevíte, který balíček vybrat? Nevadí. Popište stručně svůj projekt a vhodný rozsah doporučíme v odpovědi.", contactStats:[["2 min","stručný brief"],["1 den","odpověď"],["7 dní","cesta online"]],
-    goalLegend:"Co má web hlavně udělat?", goals:[["poptávky","Získávat poptávky"],["služby","Vysvětlit služby"],["rezervace","Umožnit rezervace"],["projekt","Představit projekt"]], sizeLegend:"Jak velký web potřebujete?", sizes:[["1","Jedna stránka"],["5","3–5 stránek"]], packageLegend:"Balíček podle vašeho rozsahu", packageHint:"Rozsah a balíček jsou propojené. Změnou jedné volby se automaticky upraví i druhá.", contactLegend:"Kam se můžeme ozvat?", name:"Jméno", email:"E-mail", emailHint:"Ověříme formát i to, zda doména přijímá e-maily.", project:"Firma nebo projekt", message:"Co by měl nový web vyřešit?", optional:"nepovinné", privacy:"Údaje použijeme pouze k vyřízení poptávky a nebudeme je předávat dál.", send:"Odeslat nezávaznou poptávku", sending:"Kontroluji a odesílám…", formNote:"Bez závazků. Odpovíme do jednoho pracovního dne.", sent:"Děkujeme. Poptávku jsme bezpečně přijali.", previousDay:"Předchozí den", nextDay:"Další den", dayOf:"Den",
-    errors:{name:"Napište prosím alespoň 2 znaky.",email:"Zadejte platný e-mail, například jmeno@firma.cz.",emailDomain:"Tato e-mailová doména nepřijímá poštu. Zkontrolujte překlep za zavináčem.",project:"Napište prosím název firmy nebo projektu.",review:"Zkontrolujte prosím označená pole.",rateLimit:"Odeslali jste více pokusů. Zkuste to prosím znovu za 10 minut.",expired:"Platnost formuláře vypršela. Obnovte stránku a zkuste to znovu.",general:"Poptávku se nepodařilo odeslat. Zkuste to prosím znovu."},
+    goalLegend:"Co má web hlavně udělat?", goals:[["poptávky","Získávat poptávky"],["služby","Vysvětlit služby"],["rezervace","Umožnit rezervace"],["projekt","Představit projekt"],["vlastní","Mám jiný cíl"]], customGoal:"Váš vlastní cíl", customGoalHint:"Jedna krátká věta, maximálně 60 znaků.", customGoalPlaceholder:"Např. získávat nové členy", sizeLegend:"Jak velký web potřebujete?", sizeHint:"Začínáme landing page. Vícestránkový web připravujeme.", landingLabel:"Landing page", landingMeta:"1 stránka · Start · 3 000 Kč", multiLabel:"Web za týden", multiMeta:"2–5 stránek · 5 000 Kč", pagesPreview:"Počet stránek", contactLegend:"Kam se můžeme ozvat?", name:"Jméno", surname:"Příjmení", email:"E-mail", emailHint:"Ověříme formát i to, zda doména přijímá e-maily.", project:"Firma nebo projekt", message:"Ve dvou větách: co potřebujete od nového webu?", messageHint:"Napište stručně, co nabízíte a co má návštěvník na webu udělat. 20–300 znaků.", messagePlaceholder:"Např. Potřebuji představit své služby. Návštěvník má rychle pochopit nabídku a odeslat poptávku.", privacy:"Údaje použijeme pouze k vyřízení poptávky a nebudeme je předávat dál.", send:"Odeslat nezávaznou poptávku", sending:"Kontroluji a odesílám…", formNote:"Bez závazků. Odpovíme do jednoho pracovního dne a případné detaily společně doplníme.", sent:"Děkujeme. Poptávku jsme bezpečně přijali.", previousDay:"Předchozí den", nextDay:"Další den", dayOf:"Den",
+    errors:{name:"Napište prosím alespoň 2 znaky.",surname:"Napište prosím alespoň 2 znaky.",email:"Zadejte platný e-mail, například jmeno@firma.cz.",emailDomain:"Tato e-mailová doména nepřijímá poštu. Zkontrolujte překlep za zavináčem.",project:"Napište prosím název firmy nebo projektu.",customGoal:"Popište vlastní cíl 3–60 znaky.",message:"Napište prosím krátké zadání o délce 20–300 znaků.",review:"Zkontrolujte prosím označená pole.",rateLimit:"Odeslali jste více pokusů. Zkuste to prosím znovu za 10 minut.",expired:"Platnost formuláře vypršela. Obnovte stránku a zkuste to znovu.",general:"Poptávku se nepodařilo odeslat. Zkuste to prosím znovu."},
     footer:"Profesionální web. Za týden online.", explore:"PROZKOUMAT", concept:"Vaše údaje používáme pouze k vyřízení poptávky.", top:"Nahoru",
     quotes:[
       { label:"DESIGN, KTERÝ PRACUJE", lead:"Nejen hezký web.", accent:"Web, který si lidé zapamatují." },
@@ -55,10 +55,10 @@ const copy = {
       { title:"Technology handled", text:"Mobile, speed, forms, SEO foundations and launch are on us.", detail:"We test, secure and prepare the website to work reliably from its very first day.", tags:["Responsive", "Speed", "SEO"] },
     ],
     processKicker:"03 / THE PROCESS", processTitle:"Seven days. No chaos.", processText:"You always know what is happening and when we need you.", processFacts:["2 revision rounds", "30 days technical support"], days:[["01","We meet you","Goals, customers and materials."],["02","We shape content","Structure and core message."],["03","We show direction","First concept and your reaction."],["04–05","We build","Pages, mobile and forms."],["06","We refine","Review and agreed changes."],["07","We go live","Launch and access handover."]], fair:"Seven days start after scope confirmation, materials delivery and the deposit.",
-    pricingKicker:"04 / PRICING", pricingTitle:"Clear scope. Clear price.", pricingText:"No hourly rates and no invoice surprises.", popular:"MOST POPULAR", choose:"Choose", vat:"one-off", scopeNote:"We confirm the exact scope and final price before work begins. Anything outside the agreed scope is discussed and approved first.", packages:[{name:"Start",price:"3 000 Kč",note:"For a one-page website",items:["One long page","6–8 sections","Copy refinement","Contact form"]},{name:"Website in a week",price:"5 000 Kč",note:"For a 3–5 page website",items:["Everything in Start","Up to 5 separate pages","Extended structure and copy","Custom design","2 revision rounds + 30 days support"]}],
+    pricingKicker:"04 / PRICING", pricingTitle:"Clear scope. Clear price.", pricingText:"No hourly rates and no invoice surprises.", popular:"AVAILABLE NOW", choose:"Choose", development:"IN DEVELOPMENT", developmentCta:"Feature in development", vat:"one-off", scopeNote:"We confirm the exact scope and final price before work begins. Anything outside the agreed scope is discussed and approved first.", packages:[{name:"Start",price:"3 000 Kč",note:"For a one-page website",items:["One long page","6–8 sections","Copy refinement","Contact form"]},{name:"Website in a week",price:"5 000 Kč",note:"For a 3–5 page website",items:["Everything in Start","Up to 5 separate pages","Extended structure and copy","Custom design","2 revision rounds + 30 days support"]}],
     faqKicker:"05 / FREQUENT QUESTIONS", faqTitle:"You ask. We answer directly.", faqHelp:"The one-week process works best for a clearly scoped presentation website. We assess more complex functionality first and propose a realistic process.", faqs:[["Can a quality website be ready in a week?","Yes, when the presentation site has a clear scope and one person approves feedback. Speed comes from the system, not shortcuts."],["What if I have no copy or photos?","We shape the structure from your answers, refine the copy and recommend a suitable visual direction."],["How many revisions are included?","Two focused rounds at agreed milestones. Changes to an approved brief are handled separately."],["Will I actually own the website?","After final payment, we hand over the website and every access credential included in the agreed scope. Domain and hosting management are confirmed before work begins."]],
-    contactKicker:"06 / LET'S BEGIN", contactTitle:"You could be live next week.", contactText:"Not sure which plan fits? Briefly describe your project and we will recommend the suitable scope in our reply.", contactStats:[["2 min","short brief"],["1 day","reply"],["7 days","path to launch"]], goalLegend:"What should the website achieve?", goals:[["leads","Generate leads"],["services","Explain services"],["booking","Enable bookings"],["project","Launch a project"]], sizeLegend:"How large is the website?", sizes:[["1","One page"],["5","3–5 pages"]], packageLegend:"Package matched to your scope", packageHint:"Scope and package are linked. Changing either option automatically updates the other.", contactLegend:"Where can we reach you?", name:"Name", email:"Email", emailHint:"We check the format and whether the domain accepts email.", project:"Company or project", message:"What should the new website solve?", optional:"optional", privacy:"We use your details only to handle this enquiry and never sell them.", send:"Send a no-obligation enquiry", sending:"Checking and sending…", formNote:"No obligation. We reply within one working day.", sent:"Thank you. Your enquiry has been securely received.", previousDay:"Previous day", nextDay:"Next day", dayOf:"Day", footer:"Professional website. Online in one week.", explore:"EXPLORE", concept:"We use your details only to handle your enquiry.", top:"Back to top",
-    errors:{name:"Please enter at least 2 characters.",email:"Enter a valid email, for example name@company.com.",emailDomain:"This email domain does not accept mail. Check for a typo after the @ sign.",project:"Please enter your company or project name.",review:"Please check the highlighted fields.",rateLimit:"There have been several attempts. Please try again in 10 minutes.",expired:"This form has expired. Refresh the page and try again.",general:"We could not send the enquiry. Please try again."},
+    contactKicker:"06 / LET'S BEGIN", contactTitle:"You could be live next week.", contactText:"Not sure which plan fits? Briefly describe your project and we will recommend the suitable scope in our reply.", contactStats:[["2 min","short brief"],["1 day","reply"],["7 days","path to launch"]], goalLegend:"What should the website achieve?", goals:[["leads","Generate leads"],["services","Explain services"],["booking","Enable bookings"],["project","Launch a project"],["custom","I have another goal"]], customGoal:"Your own goal", customGoalHint:"One short sentence, no more than 60 characters.", customGoalPlaceholder:"For example, attract new members", sizeLegend:"How large is the website?", sizeHint:"We are starting with landing pages. Multi-page websites are in development.", landingLabel:"Landing page", landingMeta:"1 page · Start · 3 000 Kč", multiLabel:"Website in a week", multiMeta:"2–5 pages · 5 000 Kč", pagesPreview:"Number of pages", contactLegend:"Where can we reach you?", name:"First name", surname:"Last name", email:"Email", emailHint:"We check the format and whether the domain accepts email.", project:"Company or project", message:"In two sentences: what do you need from the new website?", messageHint:"Briefly explain what you offer and what a visitor should do. 20–300 characters.", messagePlaceholder:"For example: I need to present my services. Visitors should understand the offer and send an enquiry.", privacy:"We use your details only to handle this enquiry and never sell them.", send:"Send a no-obligation enquiry", sending:"Checking and sending…", formNote:"No obligation. We reply within one working day and clarify any details together.", sent:"Thank you. Your enquiry has been securely received.", previousDay:"Previous day", nextDay:"Next day", dayOf:"Day", footer:"Professional website. Online in one week.", explore:"EXPLORE", concept:"We use your details only to handle your enquiry.", top:"Back to top",
+    errors:{name:"Please enter at least 2 characters.",surname:"Please enter at least 2 characters.",email:"Enter a valid email, for example name@company.com.",emailDomain:"This email domain does not accept mail. Check for a typo after the @ sign.",project:"Please enter your company or project name.",customGoal:"Describe your goal in 3–60 characters.",message:"Please enter a short brief between 20 and 300 characters.",review:"Please check the highlighted fields.",rateLimit:"There have been several attempts. Please try again in 10 minutes.",expired:"This form has expired. Refresh the page and try again.",general:"We could not send the enquiry. Please try again."},
     quotes:[
       { label:"DESIGN THAT DOES ITS JOB", lead:"More than a beautiful website.", accent:"A website people remember." },
       { label:"SPEED WITHOUT SHORTCUTS", lead:"Every day has a clear step.", accent:"You stay in control." },
@@ -95,8 +95,8 @@ export default function HomeClient({ lang }: { lang: Lang }) {
   const [portfolioPlaying, setPortfolioPlaying] = useState(true);
   const [activeDay, setActiveDay] = useState(0);
   const [goal, setGoal] = useState("0");
-  const [size, setSize] = useState("5");
-  const [selectedPackage, setSelectedPackage] = useState(1);
+  const [customGoal, setCustomGoal] = useState("");
+  const [message, setMessage] = useState("");
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [formErrors, setFormErrors] = useState<Partial<Record<FormField, string>>>({});
   const [formMessage, setFormMessage] = useState("");
@@ -183,6 +183,9 @@ export default function HomeClient({ lang }: { lang: Lang }) {
     const cleanValue = value.trim();
     if (field === "email") return EMAIL_PATTERN.test(cleanValue) ? "" : t.errors.email;
     if (field === "project") return cleanValue.length >= 2 ? "" : t.errors.project;
+    if (field === "customGoal") return cleanValue.length >= 3 && cleanValue.length <= 60 ? "" : t.errors.customGoal;
+    if (field === "message") return cleanValue.length >= 20 && cleanValue.length <= 300 ? "" : t.errors.message;
+    if (field === "lastName") return cleanValue.length >= 2 ? "" : t.errors.surname;
     return cleanValue.length >= 2 ? "" : t.errors.name;
   }
 
@@ -198,31 +201,24 @@ export default function HomeClient({ lang }: { lang: Lang }) {
     if (formStatus === "error") setFormStatus("idle");
   }
 
-  function selectPackage(index: number) {
-    setSelectedPackage(index);
-    setSize(index === 0 ? "1" : "5");
-  }
-
-  function selectSize(value: string) {
-    setSize(value);
-    setSelectedPackage(value === "1" ? 0 : 1);
-  }
-
   async function submitLead(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
     const nextErrors: Partial<Record<FormField, string>> = {
-      name: clientFieldError("name", String(data.get("name") ?? "")) || undefined,
+      firstName: clientFieldError("firstName", String(data.get("firstName") ?? "")) || undefined,
+      lastName: clientFieldError("lastName", String(data.get("lastName") ?? "")) || undefined,
       email: clientFieldError("email", String(data.get("email") ?? "")) || undefined,
       project: clientFieldError("project", String(data.get("project") ?? "")) || undefined,
+      customGoal: goal === "4" ? clientFieldError("customGoal", customGoal) || undefined : undefined,
+      message: clientFieldError("message", message) || undefined,
     };
-    const firstInvalid = (["name", "email", "project"] as FormField[]).find((field) => nextErrors[field]);
+    const firstInvalid = (["firstName", "lastName", "email", "project", "customGoal", "message"] as FormField[]).find((field) => nextErrors[field]);
     if (firstInvalid) {
       setFormErrors(nextErrors);
       setFormMessage(t.errors.review);
       setFormStatus("idle");
-      form.querySelector<HTMLInputElement>(`[name="${firstInvalid}"]`)?.focus();
+      form.querySelector<HTMLElement>(`[name="${firstInvalid}"]`)?.focus();
       return;
     }
 
@@ -237,33 +233,41 @@ export default function HomeClient({ lang }: { lang: Lang }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           idempotencyKey: idempotencyKey.current,
-          name: data.get("name"),
+          firstName: data.get("firstName"),
+          lastName: data.get("lastName"),
           email: data.get("email"),
           company: data.get("project"),
-          message: data.get("message"),
+          message,
           website: data.get("website"),
           goal,
-          size,
-          package: String(selectedPackage),
+          customGoal,
+          size: "1",
+          package: "0",
           locale: lang,
           startedAt: formStartedAt.current,
         }),
       });
       if (!response.ok) {
         const error = await response.json().catch(() => ({})) as { field?: string; code?: string };
-        const fieldName = error.field ? ({ name:"name", email:"email", company:"project", message:"message", goal:"goal", size:"size" } as Record<string,string>)[error.field] : undefined;
-        if (fieldName === "name" || fieldName === "email" || fieldName === "project") {
+        const fieldName = error.field ? ({ firstName:"firstName", lastName:"lastName", email:"email", company:"project", message:"message", customGoal:"customGoal" } as Record<string,string>)[error.field] : undefined;
+        if (fieldName === "firstName" || fieldName === "lastName" || fieldName === "email" || fieldName === "project" || fieldName === "customGoal" || fieldName === "message") {
           const fieldMessage = fieldName === "email"
             ? error.code === "EMAIL_DOMAIN_INVALID" ? t.errors.emailDomain : t.errors.email
-            : fieldName === "project" ? t.errors.project : t.errors.name;
+            : fieldName === "project" ? t.errors.project
+              : fieldName === "customGoal" ? t.errors.customGoal
+                : fieldName === "message" ? t.errors.message
+                  : fieldName === "lastName" ? t.errors.surname : t.errors.name;
           setFormErrors({ [fieldName]: fieldMessage });
-          form.querySelector<HTMLInputElement>(`[name="${fieldName}"]`)?.focus();
+          form.querySelector<HTMLElement>(`[name="${fieldName}"]`)?.focus();
         }
         setFormMessage(error.code === "RATE_LIMITED" ? t.errors.rateLimit : error.code === "FORM_EXPIRED" ? t.errors.expired : fieldName ? t.errors.review : t.errors.general);
         setFormStatus("error");
         return;
       }
       form.reset();
+      setGoal("0");
+      setCustomGoal("");
+      setMessage("");
       idempotencyKey.current = null;
       formStartedAt.current = Date.now();
       setFormStatus("success");
@@ -344,7 +348,7 @@ export default function HomeClient({ lang }: { lang: Lang }) {
 
       <section className="section pricing-section" id="pricing">
         <div className="section-heading split-heading" data-reveal><div><span className="kicker">{t.pricingKicker}</span><h2><RichHeading text={t.pricingTitle} /></h2></div><p>{t.pricingText}</p></div>
-        <div className="pricing-grid">{t.packages.map((item,index)=><article className={`${index===1?"price-card featured-price":"price-card"} reveal-step-${index}`} key={item.name} data-reveal>{index===1&&<span className="popular">{t.popular}</span>}<div><h3>{item.name}</h3><p>{item.note}</p></div><div className="price"><b>{item.price}</b><span>{t.vat}</span></div><ul>{item.items.map(line=><li key={line}><Check/>{line}</li>)}</ul><a className="button price-button" href="#contact" onClick={()=>selectPackage(index)}>{t.choose} <Arrow/></a></article>)}</div><p className="pricing-note"><Check/>{t.scopeNote}</p>
+        <div className="pricing-grid">{t.packages.map((item,index)=><article className={`${index===0?"price-card featured-price":"price-card development-price"} reveal-step-${index}`} key={item.name} data-reveal><span className={index===0?"popular":"popular development-badge"}>{index===0?t.popular:t.development}</span><div><h3>{item.name}</h3><p>{item.note}</p></div><div className="price"><b>{item.price}</b><span>{t.vat}</span></div><ul>{item.items.map(line=><li key={line}><Check/>{line}</li>)}</ul>{index===0?<a className="button price-button" href="#contact">{t.choose} <Arrow/></a>:<span className="button price-button is-disabled" aria-disabled="true">{t.developmentCta}</span>}</article>)}</div><p className="pricing-note"><Check/>{t.scopeNote}</p>
       </section>
 
       <section className="section faq-section" id="faq"><div className="faq-intro" data-reveal><span className="kicker">{t.faqKicker}</span><h2><RichHeading text={t.faqTitle} /></h2><p className="faq-help">{t.faqHelp}</p><a className="text-link" href="#contact">{t.cta}<Arrow/></a></div><div className="faq-list" data-reveal>{t.faqs.map(([question,answer],index)=><details key={question} open={index===0}><summary><span>0{index+1}</span>{question}<i aria-hidden="true">+</i></summary><p>{answer}</p></details>)}</div></section>
@@ -352,14 +356,14 @@ export default function HomeClient({ lang }: { lang: Lang }) {
       <section ref={contactRef} className="section contact-section" id="contact">
         <div className="contact-copy" data-reveal><span className="kicker">{t.contactKicker}</span><h2><RichHeading text={t.contactTitle} /></h2><p>{t.contactText}</p><div className="contact-numbers">{t.contactStats.map(([value,label])=><span key={value}><b>{value}</b>{label}</span>)}</div></div>
         <form className="lead-form" onSubmit={submitLead} aria-busy={formStatus==="submitting"} noValidate data-reveal>
-          <fieldset className="form-section"><legend className="form-label">{t.goalLegend}</legend><div className="choice-grid">{t.goals.map(([,label],index)=><label key={label}><input type="radio" name="goal" checked={goal===String(index)} onChange={()=>setGoal(String(index))}/><span>{label}</span></label>)}</div></fieldset>
-          <fieldset className="form-section"><legend className="form-label">{t.sizeLegend}</legend><div className="choice-grid">{t.sizes.map(([value,label])=><label key={value}><input type="radio" name="size" checked={size===value} onChange={()=>selectSize(value)}/><span>{label}</span></label>)}</div></fieldset>
-          <fieldset className="form-section package-section"><legend className="form-label">{t.packageLegend}</legend><p>{t.packageHint}</p><div className="package-choice">{t.packages.map((item,index)=><label key={item.name}><input type="radio" name="package" checked={selectedPackage===index} onChange={()=>selectPackage(index)}/><span><b>{item.name}</b><small>{item.price}</small></span></label>)}</div></fieldset>
+          <fieldset className="form-section goal-section"><legend className="form-label">{t.goalLegend}</legend><div className="choice-grid">{t.goals.map(([,label],index)=><label key={label}><input type="radio" name="goal" checked={goal===String(index)} onChange={()=>{setGoal(String(index));clearFieldError("customGoal")}}/><span>{label}</span></label>)}</div>{goal==="4"&&<label className={`custom-goal${formErrors.customGoal?" has-error":""}`}>{t.customGoal}<input name="customGoal" value={customGoal} minLength={3} maxLength={60} required placeholder={t.customGoalPlaceholder} aria-invalid={Boolean(formErrors.customGoal)} aria-describedby={formErrors.customGoal?"custom-goal-error":"custom-goal-hint"} onBlur={(event)=>validateField("customGoal",event.currentTarget.value)} onChange={(event)=>{setCustomGoal(event.currentTarget.value);clearFieldError("customGoal")}}/>{formErrors.customGoal?<span className="field-error" id="custom-goal-error">{formErrors.customGoal}</span>:<span className="field-hint" id="custom-goal-hint">{t.customGoalHint}</span>}</label>}</fieldset>
+          <fieldset className="form-section plan-section"><legend className="form-label">{t.sizeLegend}</legend><p>{t.sizeHint}</p><div className="plan-choice"><label className="plan-option is-selected"><input type="radio" name="plan" checked readOnly/><span className="plan-copy"><b>{t.landingLabel}</b><small>{t.landingMeta}</small></span><Check/></label><div className="plan-option is-development" aria-disabled="true"><span className="plan-copy"><b>{t.multiLabel}</b><small>{t.multiMeta}</small></span><span className="development-label">{t.development}</span><div className="page-slider-preview"><span>{t.pagesPreview}</span><input type="range" min="2" max="5" value="3" disabled aria-label={t.pagesPreview}/><div><small>2</small><b>3</b><small>4</small><small>5</small></div></div></div></div></fieldset>
           <fieldset className="form-section form-contact"><legend className="form-label">{t.contactLegend}</legend><div className="field-grid">
-            <label className={formErrors.name?"has-error":undefined}>{t.name}<input name="name" autoComplete="name" minLength={2} maxLength={100} required aria-invalid={Boolean(formErrors.name)} aria-describedby={formErrors.name?"name-error":undefined} onBlur={(event)=>validateField("name",event.currentTarget.value)} onChange={()=>clearFieldError("name")}/>{formErrors.name&&<span className="field-error" id="name-error">{formErrors.name}</span>}</label>
+            <label className={formErrors.firstName?"has-error":undefined}>{t.name}<input name="firstName" autoComplete="given-name" minLength={2} maxLength={50} required aria-invalid={Boolean(formErrors.firstName)} aria-describedby={formErrors.firstName?"first-name-error":undefined} onBlur={(event)=>validateField("firstName",event.currentTarget.value)} onChange={()=>clearFieldError("firstName")}/>{formErrors.firstName&&<span className="field-error" id="first-name-error">{formErrors.firstName}</span>}</label>
+            <label className={formErrors.lastName?"has-error":undefined}>{t.surname}<input name="lastName" autoComplete="family-name" minLength={2} maxLength={50} required aria-invalid={Boolean(formErrors.lastName)} aria-describedby={formErrors.lastName?"last-name-error":undefined} onBlur={(event)=>validateField("lastName",event.currentTarget.value)} onChange={()=>clearFieldError("lastName")}/>{formErrors.lastName&&<span className="field-error" id="last-name-error">{formErrors.lastName}</span>}</label>
             <label className={formErrors.email?"has-error":undefined}>{t.email}<input name="email" autoComplete="email" inputMode="email" type="email" maxLength={254} required aria-invalid={Boolean(formErrors.email)} aria-describedby={formErrors.email?"email-error":"email-hint"} onBlur={(event)=>validateField("email",event.currentTarget.value)} onChange={()=>clearFieldError("email")}/>{formErrors.email?<span className="field-error" id="email-error">{formErrors.email}</span>:<span className="field-hint" id="email-hint">{t.emailHint}</span>}</label>
-            <label className={`full-field${formErrors.project?" has-error":""}`}>{t.project}<input name="project" autoComplete="organization" minLength={2} maxLength={120} required aria-invalid={Boolean(formErrors.project)} aria-describedby={formErrors.project?"project-error":undefined} onBlur={(event)=>validateField("project",event.currentTarget.value)} onChange={()=>clearFieldError("project")}/>{formErrors.project&&<span className="field-error" id="project-error">{formErrors.project}</span>}</label>
-            <label className="full-field">{t.message} <small>{t.optional}</small><textarea name="message" maxLength={1500} rows={4}/></label>
+            <label className={formErrors.project?"has-error":undefined}>{t.project}<input name="project" autoComplete="organization" minLength={2} maxLength={120} required aria-invalid={Boolean(formErrors.project)} aria-describedby={formErrors.project?"project-error":undefined} onBlur={(event)=>validateField("project",event.currentTarget.value)} onChange={()=>clearFieldError("project")}/>{formErrors.project&&<span className="field-error" id="project-error">{formErrors.project}</span>}</label>
+            <label className={`full-field brief-field${formErrors.message?" has-error":""}`}>{t.message}<textarea name="message" value={message} minLength={20} maxLength={300} rows={3} required placeholder={t.messagePlaceholder} aria-invalid={Boolean(formErrors.message)} aria-describedby={formErrors.message?"message-error":"message-hint"} onBlur={(event)=>validateField("message",event.currentTarget.value)} onChange={(event)=>{setMessage(event.currentTarget.value);clearFieldError("message")}}/>{formErrors.message?<span className="field-error" id="message-error">{formErrors.message}</span>:<span className="field-hint brief-hint" id="message-hint"><span>{t.messageHint}</span><b>{message.length} / 300</b></span>}</label>
           </div></fieldset>
           <label className="honeypot" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off"/></label><p className="privacy-note"><span aria-hidden="true">✓</span>{t.privacy}</p><button className="button form-button" type="submit" disabled={formStatus==="submitting"}>{formStatus==="submitting"?t.sending:t.send}<Arrow/></button><p className={`form-note ${formMessage?"error":formStatus}`} aria-live="polite">{formStatus==="success"?t.sent:formMessage||t.formNote}</p>
         </form>

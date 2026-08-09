@@ -2,9 +2,9 @@ const MAX_BODY_BYTES = 16_384;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
 
-const ALLOWED_GOALS = new Set(["0", "1", "2", "3"]);
-const ALLOWED_SIZES = new Set(["1", "5"]);
-const ALLOWED_PACKAGES = new Set(["0", "1"]);
+const ALLOWED_GOALS = new Set(["0", "1", "2", "3", "4"]);
+const ALLOWED_SIZES = new Set(["1"]);
+const ALLOWED_PACKAGES = new Set(["0"]);
 const ALLOWED_LOCALES = new Set(["cs", "en"]);
 
 export interface InquiryEnvironment {
@@ -14,11 +14,13 @@ export interface InquiryEnvironment {
 
 type InquiryPayload = {
   idempotencyKey: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   company: string;
   message: string;
   goal: string;
+  customGoal: string;
   size: string;
   package: string;
   locale: string;
@@ -111,11 +113,11 @@ export async function handleInquiry(request: Request, env: InquiryEnvironment): 
     ).bind(
       payload.idempotencyKey,
       now,
-      payload.name,
+      `${payload.firstName} ${payload.lastName}`,
       payload.email.toLowerCase(),
       payload.company,
       payload.message,
-      payload.goal,
+      payload.goal === "4" ? `other:${payload.customGoal}` : payload.goal,
       payload.size,
       payload.package,
       payload.locale,
@@ -139,11 +141,13 @@ function validatePayload(value: unknown): ValidationResult {
 
   const input = value as Record<string, unknown>;
   const idempotencyKey = clean(input.idempotencyKey, 80);
-  const name = clean(input.name, 100);
+  const firstName = clean(input.firstName, 50);
+  const lastName = clean(input.lastName, 50);
   const email = clean(input.email, 254);
   const company = clean(input.company, 120);
-  const message = clean(input.message, 1_500);
+  const message = clean(input.message, 300);
   const goal = clean(input.goal, 4);
+  const customGoal = clean(input.customGoal, 60);
   const size = clean(input.size, 4);
   const packageName = clean(input.package, 4);
   const locale = clean(input.locale, 4);
@@ -153,19 +157,22 @@ function validatePayload(value: unknown): ValidationResult {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
     return invalid("idempotencyKey");
   }
-  if (name.length < 2) return invalid("name");
+  if (firstName.length < 2) return invalid("firstName");
+  if (lastName.length < 2) return invalid("lastName");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email)) return invalid("email");
   if (company.length < 2) return invalid("company");
+  if (message.length < 20) return invalid("message");
   if (!ALLOWED_GOALS.has(goal)) return invalid("goal");
+  if (goal === "4" && customGoal.length < 3) return invalid("customGoal");
   if (!ALLOWED_SIZES.has(size)) return invalid("size");
   if (!ALLOWED_PACKAGES.has(packageName)) return invalid("package");
-  if ((packageName === "0" && size !== "1") || (packageName === "1" && size !== "5")) return invalid("package");
+  if (packageName !== "0" || size !== "1") return invalid("package");
   if (!ALLOWED_LOCALES.has(locale)) return invalid("locale");
   if (!Number.isSafeInteger(startedAt)) return invalid("startedAt");
 
   return {
     ok: true,
-    value: { idempotencyKey, name, email, company, message, goal, size, package: packageName, locale, website, startedAt },
+    value: { idempotencyKey, firstName, lastName, email, company, message, goal, customGoal, size, package: packageName, locale, website, startedAt },
   };
 }
 
