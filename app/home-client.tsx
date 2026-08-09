@@ -102,6 +102,8 @@ export default function HomeClient({ lang }: { lang: Lang }) {
   const [formMessage, setFormMessage] = useState("");
   const [contactVisible, setContactVisible] = useState(false);
   const heroVisual = useRef<HTMLDivElement>(null);
+  const heroFrame = useRef<number | null>(null);
+  const heroPointer = useRef<{ x: number; y: number; target: HTMLDivElement } | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstNavRef = useRef<HTMLAnchorElement>(null);
   const contactRef = useRef<HTMLElement>(null);
@@ -132,6 +134,10 @@ export default function HomeClient({ lang }: { lang: Lang }) {
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
+
+  useEffect(() => () => {
+    if (heroFrame.current !== null) window.cancelAnimationFrame(heroFrame.current);
+  }, []);
 
   useEffect(() => {
     let frame = 0;
@@ -193,11 +199,27 @@ export default function HomeClient({ lang }: { lang: Lang }) {
 
   function moveHero(event: PointerEvent<HTMLDivElement>) {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches || innerWidth < 760) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width - .5) * 18;
-    const y = ((event.clientY - rect.top) / rect.height - .5) * 18;
-    heroVisual.current?.style.setProperty("--hero-x", `${x}px`);
-    heroVisual.current?.style.setProperty("--hero-y", `${y}px`);
+    heroPointer.current = { x: event.clientX, y: event.clientY, target: event.currentTarget };
+    if (heroFrame.current !== null) return;
+    heroFrame.current = window.requestAnimationFrame(() => {
+      const pointer = heroPointer.current;
+      if (pointer) {
+        const rect = pointer.target.getBoundingClientRect();
+        const x = ((pointer.x - rect.left) / rect.width - .5) * 14;
+        const y = ((pointer.y - rect.top) / rect.height - .5) * 14;
+        heroVisual.current?.style.setProperty("--hero-x", `${x}px`);
+        heroVisual.current?.style.setProperty("--hero-y", `${y}px`);
+      }
+      heroFrame.current = null;
+    });
+  }
+
+  function resetHero() {
+    if (heroFrame.current !== null) window.cancelAnimationFrame(heroFrame.current);
+    heroFrame.current = null;
+    heroPointer.current = null;
+    heroVisual.current?.style.setProperty("--hero-x", "0px");
+    heroVisual.current?.style.setProperty("--hero-y", "0px");
   }
 
   function clientFieldError(field: FormField, value: string) {
@@ -327,7 +349,7 @@ export default function HomeClient({ lang }: { lang: Lang }) {
           <div className="hero-actions"><a className="button" href="#contact">{t.cta} <Arrow /></a><a className="text-link" href="#work">{t.showWork} <span>↓</span></a></div>
           <div className="trust-line">{t.trust.map((item) => <span key={item}><Check />{item}</span>)}</div>
         </div>
-        <div className="hero-visual" ref={heroVisual} onPointerMove={moveHero} onPointerLeave={() => { heroVisual.current?.style.setProperty("--hero-x", "0px"); heroVisual.current?.style.setProperty("--hero-y", "0px"); }} aria-hidden="true" data-reveal>
+        <div className="hero-visual" ref={heroVisual} onPointerMove={moveHero} onPointerLeave={resetHero} aria-hidden="true" data-reveal>
           <div className="browser-card"><div className="browser-top"><span/><span/><span/><small>yournewwebsite.com</small></div><div className="mini-site"><div className="mini-nav"><b>materia</b><i/><i/><i/></div><div className="mini-label">DESIGN FOR EVERYDAY LIFE</div><div className="mini-title">A better home<br/>starts with <em>an idea.</em></div><div className="mini-button">Explore the work</div><div className="chair-shape"><span/><i/></div></div></div>
           <div className="week-card"><span>PROJECT / 07 DAYS</span><div className="week-progress">{[1,2,3,4,5,6,7].map(n => <i key={n}/>)}</div><b>Ready to launch <Check /></b></div>
         </div>
