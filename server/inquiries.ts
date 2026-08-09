@@ -3,7 +3,7 @@ const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
 
 const ALLOWED_GOALS = new Set(["0", "1", "2", "3"]);
-const ALLOWED_SIZES = new Set(["1", "5", "8"]);
+const ALLOWED_SIZES = new Set(["1", "5"]);
 const ALLOWED_PACKAGES = new Set(["0", "1"]);
 const ALLOWED_LOCALES = new Set(["cs", "en"]);
 
@@ -159,6 +159,7 @@ function validatePayload(value: unknown): ValidationResult {
   if (!ALLOWED_GOALS.has(goal)) return invalid("goal");
   if (!ALLOWED_SIZES.has(size)) return invalid("size");
   if (!ALLOWED_PACKAGES.has(packageName)) return invalid("package");
+  if ((packageName === "0" && size !== "1") || (packageName === "1" && size !== "5")) return invalid("package");
   if (!ALLOWED_LOCALES.has(locale)) return invalid("locale");
   if (!Number.isSafeInteger(startedAt)) return invalid("startedAt");
 
