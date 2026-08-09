@@ -7,18 +7,6 @@ const ALLOWED_SIZES = new Set(["1", "5", "8"]);
 const ALLOWED_PACKAGES = new Set(["0", "1"]);
 const ALLOWED_LOCALES = new Set(["cs", "en"]);
 
-type D1Result<T = unknown> = { results?: T[]; success: boolean };
-
-export interface D1PreparedStatement {
-  bind(...values: unknown[]): D1PreparedStatement;
-  first<T = Record<string, unknown>>(): Promise<T | null>;
-  run<T = Record<string, unknown>>(): Promise<D1Result<T>>;
-}
-
-export interface D1Database {
-  prepare(query: string): D1PreparedStatement;
-}
-
 export interface InquiryEnvironment {
   DB: D1Database;
   LEAD_HASH_SECRET?: string;
@@ -47,7 +35,10 @@ export async function handleInquiry(request: Request, env: InquiryEnvironment): 
 
   if (request.method !== "POST") return json({ error: "Method not allowed." }, 405, { Allow: "POST" });
   if (request.headers.get("origin") !== url.origin) return json({ error: "Invalid request origin." }, 403);
-  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite && fetchSite !== "same-origin") return json({ error: "Invalid request context." }, 403);
+  const contentType = request.headers.get("content-type")?.split(";", 1)[0].trim().toLowerCase();
+  if (contentType !== "application/json") {
     return json({ error: "Expected application/json." }, 415);
   }
 
@@ -80,6 +71,11 @@ export async function handleInquiry(request: Request, env: InquiryEnvironment): 
   if (!env.LEAD_HASH_SECRET || env.LEAD_HASH_SECRET.length < 24) {
     return json({ error: "The form is temporarily unavailable." }, 503);
   }
+
+  const existing = await env.DB.prepare("SELECT id FROM inquiries WHERE id = ?")
+    .bind(payload.idempotencyKey)
+    .first<{ id: string }>();
+  if (existing) return json({ ok: true, id: payload.idempotencyKey }, 200);
 
   const now = Date.now();
   const windowStartedAt = Math.floor(now / RATE_LIMIT_WINDOW_MS) * RATE_LIMIT_WINDOW_MS;
@@ -154,7 +150,9 @@ function validatePayload(value: unknown): ValidationResult {
   const website = clean(input.website, 200);
   const startedAt = typeof input.startedAt === "number" ? input.startedAt : Number.NaN;
 
-  if (!/^[0-9a-f-]{36}$/i.test(idempotencyKey)) return invalid("idempotencyKey");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
+    return invalid("idempotencyKey");
+  }
   if (name.length < 2) return invalid("name");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email)) return invalid("email");
   if (company.length < 2) return invalid("company");
