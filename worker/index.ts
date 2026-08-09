@@ -71,6 +71,9 @@ function createContentSecurityPolicy(nonce?: string): string {
   const scripts = nonce
     ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`
     : "script-src 'none'";
+  const styles = nonce
+    ? `style-src 'self' 'nonce-${nonce}'`
+    : "style-src 'none'";
 
   return [
     "default-src 'self'",
@@ -81,8 +84,8 @@ function createContentSecurityPolicy(nonce?: string): string {
     "form-action 'self'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "style-src 'self' 'unsafe-inline'",
-    "style-src-attr 'unsafe-inline'",
+    styles,
+    "style-src-attr 'none'",
     scripts,
     "script-src-attr 'none'",
     "connect-src 'self'",
